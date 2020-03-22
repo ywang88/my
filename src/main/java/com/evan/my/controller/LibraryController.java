@@ -3,9 +3,15 @@ package com.evan.my.controller;
 import com.evan.my.entity.Book;
 import com.evan.my.service.BookService;
 import com.evan.my.service.CategoryService;
+import com.evan.my.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -16,7 +22,7 @@ import java.util.List;
 public class LibraryController {
 
     @Autowired
-   private BookService bookService;
+    private BookService bookService;
 
     @Autowired
     private CategoryService categoryService;
@@ -46,12 +52,29 @@ public class LibraryController {
     //根据书籍分类查出书籍
     @CrossOrigin
     @GetMapping("/api/categoryies/{cid}/books")
-    public List<Book> listByCategory(@PathVariable("cid") int cid) throws Exception{
-        if (0 !=cid){
+    public List<Book> listByCategory(@PathVariable("cid") int cid) throws Exception {
+        if (0 != cid) {
             return bookService.listByCategory(cid);
-        }else {
+        } else {
             return list();
         }
     }
-
+    @CrossOrigin
+    @PostMapping("api/covers")
+    public String coversUpload(MultipartFile file) throws Exception {
+        String folder = "C:/workspace/img";
+        File imageFolder = new File(folder);
+        File f = new File(imageFolder, StringUtils.getRandomString(11) + file.getOriginalFilename()
+                .substring(file.getOriginalFilename().length() - 4));
+        if (!f.getParentFile().exists())
+            f.getParentFile().mkdirs();
+        try {
+            file.transferTo(f);
+            String imgURL = "http://localhost:8443/api/file/" + f.getName();
+            return imgURL;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
 }
