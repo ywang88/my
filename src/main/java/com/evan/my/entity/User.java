@@ -23,4 +23,5 @@ public class User {
     String username;
     @NotBlank(message = "密码不能为空")
     String password;
+    String salt;
 }

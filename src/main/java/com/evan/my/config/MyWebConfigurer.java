@@ -26,18 +26,29 @@ public class MyWebConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //
-        registry.addInterceptor(getLoginInterceptor()).addPathPatterns("/**").excludePathPatterns("index").excludePathPatterns("library");
-    }
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/api/file/**").addResourceLocations("file:" + "C:/workspace/img/");
+        registry.addInterceptor(getLoginInterceptor())
+                .addPathPatterns("/**")
+                .excludePathPatterns("/index.html")
+                .excludePathPatterns("/api/login")
+                .excludePathPatterns("/api/register")
+                .excludePathPatterns("/api/logout");
     }
 
-//    @Override
-//    public void addCorsMapping(CorsRegistry registry){
-//        registry.addMapping("/**")
-//                .allowedOrigins("*")
-//                .allowedMethods("*")
-//                .allowedHeaders("*");
-//    }
+    //设置文件本地存储位置
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/api/file/**")
+                .addResourceLocations("file:" + "C:/workspace/img/");
+    }
+
+    //允许所有请求跨域
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowCredentials(true)
+                .allowedOrigins("*")
+                .allowedMethods("POST","GET","PUT","OPTIONS","DELETE")
+                .allowedHeaders("*");
+    }
+
 }
